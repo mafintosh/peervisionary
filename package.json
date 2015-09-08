@@ -7,7 +7,7 @@
     "airswarm": "^1.0.1",
     "choppa": "^1.0.2",
     "minimist": "^1.2.0",
-    "peervision": "0.0.2",
+    "peervision": "0.0.3",
     "signalhub": "^4.2.2"
   },
   "devDependencies": {},

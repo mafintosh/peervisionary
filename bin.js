@@ -18,17 +18,26 @@ airswarm('pv-' + vision.id.toString('hex'), function (p) {
   p.pipe(vision.createStream()).pipe(p)
 })
 
+vision.on('upload', function (index) {
+  console.error('DEBUG: Uploading block #' + index)
+})
+
+vision.on('download', function (index) {
+  console.error('DEBUG: Downloading block #' + index)
+})
+
+
 var blocks = 0
 
 if (!id) {
-  console.log('Stream id is', vision.id.toString('hex'))
+  console.error('Stream id is', vision.id.toString('hex'))
   console.error('Enter the files you want to stream:')
   process.stdin.on('data', function (data) {
     fs.createReadStream(data.toString().trim()).pipe(choppa(16 * 1024)).on('data', function (data) {
       blocks++
       vision.append(data)
     }).on('end', function () {
-      console.error('Appended', blocks, 'blocks')
+      console.error('DEBUG: Appended', blocks, 'blocks')
     })
   })
 } else {
@@ -36,7 +45,6 @@ if (!id) {
   loop()
 
   function loop () {
-    console.error('Fetching block', offset)
     vision.get(offset, function (err, data) {
       if (err) throw err
       offset++
