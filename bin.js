@@ -7,6 +7,7 @@ var signalhub = require('signalhub')
 var net = require('net')
 var choppa = require('choppa')
 var minimist = require('minimist')
+var pump = require('pump')
 
 var argv = minimist(process.argv)
 
@@ -15,7 +16,7 @@ var vision = peervision(id ? new Buffer(id, 'hex') : null)
 
 airswarm('pv-' + vision.id.toString('hex'), function (p) {
   console.error('DEBUG: Got new peer!')
-  p.pipe(vision.createStream()).pipe(p)
+  pump(p, vision.createStream(), p)
 })
 
 vision.on('upload', function (index) {
