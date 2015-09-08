@@ -1,0 +1,27 @@
+{
+  "name": "peervisionary",
+  "version": "0.0.0",
+  "description": "Command line tool that combines airswarm and peervision to stream p2p content over your local network",
+  "main": "index.js",
+  "dependencies": {
+    "airswarm": "^1.0.1",
+    "choppa": "^1.0.2",
+    "minimist": "^1.2.0",
+    "peervision": "0.0.2",
+    "signalhub": "^4.2.2"
+  },
+  "devDependencies": {},
+  "bin": {
+    "peervisionary": "./bin.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mafintosh/peervisionary.git"
+  },
+  "author": "Mathias Buus (@mafintosh)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mafintosh/peervisionary/issues"
+  },
+  "homepage": "https://github.com/mafintosh/peervisionary"
+}
