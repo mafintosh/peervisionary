@@ -64,7 +64,11 @@ if (!id) {
   var offset = Number(argv.offset || 0)
   loop()
 
+  var buffer = 5
+  function noop () {}
+
   function loop () {
+    for (var i = 0; i < buffer; i++) vision.get(offset + buffer + 1, noop)
     vision.get(offset, function (err, data) {
       if (err) throw err
       offset++
