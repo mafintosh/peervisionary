@@ -13,18 +13,29 @@ var argv = minimist(process.argv)
 
 var id = argv._[2]
 var vision = peervision(id ? new Buffer(id, 'hex') : null)
+var debug = argv.debug ? console.error.bind(console, 'DEBUG:') : function () {}
+
+if (argv.webrtc) {
+  var wrtc = require('wrtc')
+  var swarm = require('webrtc-swarm')
+  var sw = swarm(signalhub('pv-' + vision.id.toString('hex'), ['https://signalhub.mafintosh.com']), {wrtc: wrtc})
+  sw.on('peer', function (p) {
+    debug('WebRTC peer')
+    pump(p, vision.createStream(), p)
+  })
+}
 
 airswarm('pv-' + vision.id.toString('hex'), function (p) {
-  console.error('DEBUG: Got new peer!')
+  debug('Airswarm peer')
   pump(p, vision.createStream(), p)
 })
 
 vision.on('upload', function (index) {
-  console.error('DEBUG: Uploading block #' + index)
+  debug('Uploading block #' + index)
 })
 
 vision.on('download', function (index) {
-  console.error('DEBUG: Downloading block #' + index)
+  debug('Downloading block #' + index)
 })
 
 
@@ -32,13 +43,21 @@ var blocks = 0
 
 if (!id) {
   console.error('Stream id is', vision.id.toString('hex'))
+
+  if (argv.stdin) {
+    process.stdin.on('data', function (data) {
+      vision.append(data)
+    })
+    return
+  }
+
   console.error('Enter the files you want to stream:')
   process.stdin.on('data', function (data) {
     fs.createReadStream(data.toString().trim()).pipe(choppa(16 * 1024)).on('data', function (data) {
       blocks++
       vision.append(data)
     }).on('end', function () {
-      console.error('DEBUG: Appended', blocks, 'blocks')
+      debug('Appended', blocks, 'blocks')
     })
   })
 } else {
