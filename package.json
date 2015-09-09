@@ -1,6 +1,6 @@
 {
   "name": "peervisionary",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Command line tool that combines airswarm and peervision to stream p2p content over your local network",
   "main": "index.js",
   "dependencies": {
