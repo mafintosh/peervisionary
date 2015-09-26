@@ -68,7 +68,7 @@ if (!id) {
   function noop () {}
 
   function loop () {
-    for (var i = 0; i < buffer; i++) vision.get(offset + i + 1, noop)
+    // for (var i = 0; i < buffer; i++) vision.get(offset + i + 1, noop)
     vision.get(offset, function (err, data) {
       if (err) throw err
       offset++
