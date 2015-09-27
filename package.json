@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "airswarm": "^1.0.1",
+    "bittorrent-dht": "^4.0.1",
     "choppa": "^1.0.2",
     "minimist": "^1.2.0",
     "peervision": "0.0.6",

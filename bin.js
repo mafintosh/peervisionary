@@ -8,7 +8,9 @@ var net = require('net')
 var choppa = require('choppa')
 var minimist = require('minimist')
 var pump = require('pump')
+var DHT = require('bittorrent-dht')
 
+var dht = new DHT()
 var argv = minimist(process.argv)
 
 var id = argv._[2]
@@ -25,9 +27,23 @@ if (argv.webrtc) {
   })
 }
 
-airswarm('pv-' + vision.id.toString('hex'), function (p) {
+var server = airswarm('pv-' + vision.id.toString('hex'), function (p) {
   debug('Airswarm peer')
   pump(p, vision.createStream(), p)
+})
+
+dht.on('ready', function () {
+  debug('DHT ready')
+  dht.announce(vision.id.slice(0, 20), server.address().port)
+})
+
+var peers = {}
+
+dht.on('peer', function (peer) {
+  if (peers[peer]) return
+  peers[peer] = true
+  var socket = net.connect(Number(peer.split(':')[1]), peer.split(':')[0])
+  pump(socket, vision.createStream(), socket)
 })
 
 vision.on('upload', function (index) {
