@@ -5,6 +5,7 @@ var peervision = require('peervision')
 var airswarm = require('airswarm')
 var signalhub = require('signalhub')
 var net = require('net')
+var thunky = require('thunky')
 var choppa = require('choppa')
 var minimist = require('minimist')
 var pump = require('pump')
@@ -97,14 +98,34 @@ if (!id) {
   })
 } else {
   var offset = Number(argv.offset || 0)
+  var buffer = 5
+  var fetching = {}
+
   loop()
 
-  var buffer = 5
   function noop () {}
 
+  function add (i) {
+    var fetch = thunky(function (cb) {
+      vision.get(i, cb)
+    })
+    fetch()
+    fetching[i] = fetch
+  }
+
+  function fetch (i, cb) {
+    if (fetching[i]) {
+      var get = fetching[i]
+      delete fetching[i]
+      get(cb)
+    } else {
+      vision.get(i, cb)
+    }
+  }
+
   function loop () {
-    // for (var i = 0; i < buffer; i++) vision.get(offset + i + 1, noop)
-    vision.get(offset, function (err, data) {
+    for (var i = 0; i < buffer; i++) add(offset + i + 1)
+    fetch(offset, function (err, data) {
       if (err) throw err
       offset++
       process.stdout.write(data, loop)

@@ -10,7 +10,8 @@
     "minimist": "^1.2.0",
     "peervision": "0.0.7",
     "pump": "^1.0.0",
-    "signalhub": "^4.2.2"
+    "signalhub": "^4.2.2",
+    "thunky": "^0.1.0"
   },
   "devDependencies": {},
   "bin": {
