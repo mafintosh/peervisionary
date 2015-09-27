@@ -35,6 +35,13 @@ var server = airswarm('pv-' + vision.id.toString('hex'), function (p) {
 dht.on('ready', function () {
   debug('DHT ready')
   dht.announce(vision.id.slice(0, 20), server.address().port)
+
+  setInterval(lookup, 10000)
+  lookup()
+
+  function lookup () {
+    dht.lookup(vision.id.slice(0, 20))
+  }
 })
 
 var peers = {}
