@@ -34,13 +34,19 @@ var server = airswarm('pv-' + vision.id.toString('hex'), function (p) {
 
 dht.on('ready', function () {
   debug('DHT ready')
-  dht.announce(vision.id.slice(0, 20), server.address().port)
+
+  lookup()
+  announce()
 
   setInterval(lookup, 10000)
-  lookup()
+  setInterval(announce, 20000)
 
   function lookup () {
     dht.lookup(vision.id.slice(0, 20))
+  }
+
+  function announce () {
+    dht.announce(vision.id.slice(0, 20), server.address().port)
   }
 })
 
@@ -68,15 +74,21 @@ if (!id) {
   console.error('Stream id is', vision.id.toString('hex'))
 
   if (argv.stdin) {
-    process.stdin.on('data', function (data) {
-      vision.append(data)
-    })
+    if (argv.chunks) {
+      process.stdin.pipe(choppa(Number(argv.chunks))).on('data', function (data) {
+        vision.append(data)
+      })
+    } else {
+      process.stdin.on('data', function (data) {
+        vision.append(data)
+      })
+    }
     return
   }
 
   console.error('Enter the files you want to stream:')
   process.stdin.on('data', function (data) {
-    fs.createReadStream(data.toString().trim()).pipe(choppa(16 * 1024)).on('data', function (data) {
+    fs.createReadStream(data.toString().trim()).pipe(choppa(Number(argv.chunks || 16 * 1024))).on('data', function (data) {
       blocks++
       vision.append(data)
     }).on('end', function () {
